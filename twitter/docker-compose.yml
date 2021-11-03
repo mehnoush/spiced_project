@@ -1,0 +1,41 @@
+# which docker compose version you want to use
+version: '3'
+# service -> container
+services:
+
+  tweet_collector:
+    build: tweet_collector/ #use build for containers we design
+    volumes:
+    - ./tweet_collector/:/app # maps contents of tweet_collector to app folder in container
+    depends_on:
+    - mongodb # ensures that mongodb is on when needed. Sets container order
+
+  mongodb:
+    image: mongo
+    ports:
+    # local-port:container-port
+    - 27017:27017
+    # 27017 is the default port for mongo. 
+    # I don't have mongo locally so using it will not create a conflict
+
+  etl:
+    build: etl/ #use build for containers we design
+    volumes:
+    - ./etl/:/app # maps contents of tweet_collector to app folder in container
+    depends_on:
+    - mongodb # ensures that mongodb is on when needed. Sets container order
+    # -mypg need to create postgres container before we can add depends_on
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: xxxx
+
+  slackbot:
+    build: slackbot/ #use build for containers we design
+    volumes:
+    - ./slackbot/:/app # maps contents of tweet_collector to app folder in container
+    depends_on:
+    - db # ensures that mongodb is on when needed. Sets container order
+    # -mypg need to create postgres container before we can add depends_on

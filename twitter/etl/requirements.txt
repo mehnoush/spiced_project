@@ -1,0 +1,6 @@
+pandas
+scikit-learn
+pymongo
+sqlalchemy
+psycopg2-binary
+vaderSentiment
